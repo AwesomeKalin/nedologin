@@ -1,12 +1,9 @@
 package ru.marduk.nedologin.server;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.event.server.ServerStoppedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.minecraft.server.MinecraftServer;
 import ru.marduk.nedologin.Nedologin;
 import ru.marduk.nedologin.server.handler.PlayerLoginHandler;
 import ru.marduk.nedologin.server.storage.NLStorage;
@@ -16,26 +13,20 @@ import ru.marduk.nedologin.NLConstants;
 import java.io.IOException;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(value = Dist.DEDICATED_SERVER, modid = NLConstants.MODID)
+@Environment(EnvType.SERVER)
 public final class ServerLoader {
+    public static void serverStarting(MinecraftServer minecraftServer) {
+        NLStorage.initialize(NLConfig.storageProvider, minecraftServer);
 
-    public static void serverSetup(@SuppressWarnings("unused") FMLDedicatedServerSetupEvent event) {
-        // NO-OP
+        PlayerLoginHandler.initLoginHandler(NLConfig.plugins.stream().map(ResourceLocation::new));
     }
 
-    @SubscribeEvent
-    public static void serverStarting(ServerStartingEvent e) throws RuntimeException {
-        NLStorage.initialize(NLConfig.SERVER.storageProvider.get(), e);
-
-        PlayerLoginHandler.initLoginHandler(NLConfig.SERVER.plugins.get().stream().map(ResourceLocation::new));
-    }
-
-    @SubscribeEvent
-    public static void serverStopped(ServerStoppedEvent e) throws IOException {
+    public static void serverStopped(MinecraftServer minecraftServer) {
         PlayerLoginHandler.instance().stop();
 
         Nedologin.logger.info("Saving all entries");
-        if (NLStorage.instance() != null)
+        if (NLStorage.instance() != null) {
             NLStorage.instance().storageProvider.save();
+        }
     }
 }

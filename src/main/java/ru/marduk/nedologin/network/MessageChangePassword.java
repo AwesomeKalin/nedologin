@@ -1,18 +1,17 @@
 package ru.marduk.nedologin.network;
 
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.packs.repository.Pack;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import ru.marduk.nedologin.NLConfig;
 import ru.marduk.nedologin.Nedologin;
 import ru.marduk.nedologin.server.storage.NLStorage;
 import ru.marduk.nedologin.utils.SHA256;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.function.Supplier;
 
 public class MessageChangePassword {
     private final String original, to;
@@ -35,42 +34,29 @@ public class MessageChangePassword {
         return new MessageChangePassword(original, to);
     }
 
-    public static void handle(MessageChangePassword msg, Supplier<NetworkEvent.Context> ctx) {
-        NetworkEvent.Context context = ctx.get();
-        assert context.getSender() != null;
-        String username = Objects.requireNonNull(ctx.get().getSender()).getGameProfile().getName();
+    public static void handle(MinecraftServer minecraftServer, ServerPlayer serverPlayer, ServerGamePacketListenerImpl serverGamePacketListener, FriendlyByteBuf friendlyByteBuf, PacketSender packetSender) {
+        MessageChangePassword msg = MessageChangePassword.decode(friendlyByteBuf);
+        String username = serverPlayer.getGameProfile().getName();
 
-        if (!NLConfig.SERVER.enableChangePassword.get()) {
-            context.getSender().displayClientMessage(
-                    Component.translatable("nedologin.info.password_change_disabled"),
-                    false
-            );
-
-            NetworkLoader.INSTANCE.send(PacketDistributor.PLAYER.with(context::getSender), new MessageChangePasswordResponse(false));
-
-            context.setPacketHandled(true);
+        if (!NLConfig.enableChangePassword) {
+            serverPlayer.displayClientMessage(Component.translatable("nedologin.info.password_change_disabled"), false);
 
             return;
         }
 
         if (NLStorage.instance().storageProvider.checkPassword(username, msg.original)) {
             NLStorage.instance().storageProvider.changePassword(username, msg.to);
-            context.getSender().displayClientMessage(
+            serverPlayer.displayClientMessage(
                     Component.translatable("nedologin.info.password_change_successful"),
                     false
             );
-            NetworkLoader.INSTANCE.send(PacketDistributor.PLAYER.with(context::getSender),
-                    new MessageChangePasswordResponse(true));
         } else {
             // Should never happen though
-            context.getSender().displayClientMessage(
+            serverPlayer.displayClientMessage(
                     Component.translatable("nedologin.info.password_change_fail"),
                     false
             );
-            NetworkLoader.INSTANCE.send(PacketDistributor.PLAYER.with(context::getSender),
-                    new MessageChangePasswordResponse(false));
             Nedologin.logger.warn("Player {} tried to change password with a wrong password.", username);
         }
-        context.setPacketHandled(true);
     }
 }

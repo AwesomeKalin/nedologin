@@ -2,7 +2,6 @@ package ru.marduk.nedologin.server.handler.plugins;
 
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.server.ServerLifecycleHooks;
 import ru.marduk.nedologin.server.handler.HandlerPlugin;
 import ru.marduk.nedologin.server.handler.Login;
 
@@ -25,7 +24,7 @@ public final class RestrictMovement implements HandlerPlugin {
     @Override
     public void preLogin(ServerPlayer player, Login login) {
         ScheduledFuture<?> future = executor.scheduleWithFixedDelay(() -> {
-            ServerLifecycleHooks.getCurrentServer().tell(new TickTask(1, () -> {
+            player.getServer().tell(new TickTask(1, () -> {
                 player.setPos(login.posX, login.posY, login.posZ);
                 player.connection.teleport(login.posX, login.posY, login.posZ, login.rotY, login.rotX);
             }));

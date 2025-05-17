@@ -9,10 +9,8 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import ru.marduk.nedologin.NLConstants;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.UUID;
 
-@ParametersAreNonnullByDefault
 public final class SetPasswordScreen extends Screen {
     private final Screen parentScreen;
 

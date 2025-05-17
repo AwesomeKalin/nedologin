@@ -1,15 +1,15 @@
 package ru.marduk.nedologin.server.storage;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.world.level.GameType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import oshi.annotation.concurrent.ThreadSafe;
 
-import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.util.Collection;
 
 @ThreadSafe
-@OnlyIn(Dist.DEDICATED_SERVER)
+@Environment(EnvType.SERVER)
 public interface StorageProvider {
     boolean checkPassword(String username, String password);
 
@@ -19,7 +19,7 @@ public interface StorageProvider {
 
     void register(String username, String password);
 
-    void save() throws IOException;
+    void save();
 
     GameType gameType(String username);
 

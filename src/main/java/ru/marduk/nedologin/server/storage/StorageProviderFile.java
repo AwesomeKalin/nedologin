@@ -2,14 +2,14 @@ package ru.marduk.nedologin.server.storage;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.world.level.GameType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import oshi.annotation.concurrent.ThreadSafe;
 import ru.marduk.nedologin.NLConfig;
 import ru.marduk.nedologin.NLConstants;
 import ru.marduk.nedologin.Nedologin;
 import at.favre.lib.crypto.bcrypt.*;
-import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ThreadSafe
-@OnlyIn(Dist.DEDICATED_SERVER)
+@Environment(EnvType.SERVER)
 public class StorageProviderFile implements StorageProvider {
     private final Gson gson = new Gson();
     private final Path path;
@@ -72,13 +72,12 @@ public class StorageProviderFile implements StorageProvider {
     }
 
     @Override
-    public synchronized void save() throws IOException {
+    public synchronized void save() {
         try {
             Files.writeString(path, gson.toJson(entries.values().toArray()), StandardOpenOption.TRUNCATE_EXISTING);
             dirty = false;
         } catch (IOException ex) {
             Nedologin.logger.error("Unable to save entries", ex);
-            throw ex;
         }
     }
 
@@ -117,7 +116,7 @@ public class StorageProviderFile implements StorageProvider {
         POJOUserEntry entry = new POJOUserEntry();
         entry.username = username;
         entry.password = password;
-        entry.gameType = NLConfig.SERVER.defaultGameType.get();
+        entry.gameType = NLConfig.defaultGameType;
         return entry;
     }
 

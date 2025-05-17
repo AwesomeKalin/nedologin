@@ -1,14 +1,14 @@
 package ru.marduk.nedologin.network;
 
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
-import ru.marduk.nedologin.Nedologin;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import ru.marduk.nedologin.server.handler.PlayerLoginHandler;
 import ru.marduk.nedologin.utils.SHA256;
 
 import java.nio.charset.StandardCharsets;
-import java.util.function.Supplier;
 
 public class MessageLogin {
     private final String pwd;
@@ -27,11 +27,11 @@ public class MessageLogin {
         return new MessageLogin(buffer.readCharSequence(len, StandardCharsets.UTF_8).toString());
     }
 
-    public static void handle(MessageLogin message, Supplier<NetworkEvent.Context> ctx) {
-        ServerPlayer player = ctx.get().getSender();
-        if (player != null) {
-            PlayerLoginHandler.instance().login(player.getGameProfile().getName(), message.pwd);
+    public static void handle(MinecraftServer minecraftServer, ServerPlayer serverPlayer, ServerGamePacketListenerImpl serverGamePacketListener, FriendlyByteBuf friendlyByteBuf, PacketSender packetSender) {
+        MessageLogin msg = MessageLogin.decode(friendlyByteBuf);
+
+        if (serverPlayer != null) {
+            PlayerLoginHandler.instance().login(serverPlayer.getGameProfile().getName(), msg.pwd);
         }
-        ctx.get().setPacketHandled(true);
     }
 }

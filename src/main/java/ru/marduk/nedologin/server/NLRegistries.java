@@ -1,7 +1,7 @@
 package ru.marduk.nedologin.server;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import ru.marduk.nedologin.NedologinServer;
 import ru.marduk.nedologin.server.handler.HandlerPlugin;
 import ru.marduk.nedologin.server.handler.plugins.*;
 import ru.marduk.nedologin.server.storage.StorageProvider;
@@ -52,7 +52,7 @@ public class NLRegistries<S> {
 
         // Default storage providers
         STORAGE_PROVIDERS.register(new ResourceLocation("nedologin", "file"),
-                () -> mustCall(() -> new StorageProviderFile(ServerLifecycleHooks.getCurrentServer().getWorldPath(NLConstants.NL_ENTRY))));
+                () -> mustCall(() -> new StorageProviderFile(NedologinServer.SERVER.getWorldPath(NLConstants.NL_ENTRY))));
         STORAGE_PROVIDERS.register(new ResourceLocation("nedologin", "sqlite"),
                 () -> mustCall((Callable<StorageProvider>) StorageProviderSQLite::new));
         STORAGE_PROVIDERS.register(new ResourceLocation("nedologin", "mariadb"),

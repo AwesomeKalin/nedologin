@@ -26,7 +26,7 @@ public final class Timeout implements HandlerPlugin {
     public void preLogin(ServerPlayer player, Login login) {
         ScheduledFuture<?> future = executor.schedule(() -> {
             player.connection.disconnect(Component.literal("Login timeout"));
-        }, NLConfig.SERVER.secs.get(), TimeUnit.SECONDS);
+        }, NLConfig.secs, TimeUnit.SECONDS);
 
         Optional.ofNullable(futures.put(login.name, future))
                 .ifPresent(f -> f.cancel(true));

@@ -5,13 +5,13 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.GameType;
-import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import ru.marduk.nedologin.command.arguments.ArgumentTypeHandlerPlugin;
 import ru.marduk.nedologin.NLConstants;
 import ru.marduk.nedologin.command.arguments.ArgumentTypeEntryName;
@@ -52,14 +52,10 @@ public class NLCommand {
     }
 
     private static int save(CommandContext<CommandSourceStack> ctx) {
-        try {
-            long start = System.currentTimeMillis();
-            NLStorage.instance().storageProvider.save();
-            long cost = System.currentTimeMillis() - start;
-            ctx.getSource().sendSuccess(Component.literal("Done. Took " + cost + " ms."), true);
-        } catch (IOException e) {
-            ctx.getSource().sendSuccess(Component.literal("Error during saving entries, see log for details"), false);
-        }
+        long start = System.currentTimeMillis();
+        NLStorage.instance().storageProvider.save();
+        long cost = System.currentTimeMillis() - start;
+        ctx.getSource().sendSuccess(Component.literal("Done. Took " + cost + " ms."), true);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -80,11 +76,9 @@ public class NLCommand {
 
     private static int about(CommandContext<CommandSourceStack> ctx) {
         @SuppressWarnings("OptionalGetWithoutIsPresent")
-        ModInfo info = FMLLoader.getLoadingModList().getMods().stream()
-                .filter(modInfo -> modInfo.getModId().equals(NLConstants.MODID))
-                .findAny().get();
+        ModContainer info = FabricLoader.getInstance().getModContainer(NLConstants.MODID).get();
         ctx.getSource().sendSuccess(
-                Component.translatable("nedologin.command.about.info", info.getVersion().toString()),
+                Component.translatable("nedologin.command.about.info", info.getMetadata().getVersion().toString()),
                 false
         );
         return Command.SINGLE_SUCCESS;

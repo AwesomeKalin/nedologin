@@ -90,7 +90,7 @@ public abstract class StorageProviderSQL implements StorageProvider {
                     "VALUES (?, ?, ?)");
             st.setString(1, username);
             st.setString(2, BCrypt.with(BCrypt.Version.VERSION_2Y).hashToString(NLConstants.BCRYPT_COST, password.toCharArray()));
-            st.setInt(3, NLConfig.SERVER.defaultGameType.get());
+            st.setInt(3, NLConfig.defaultGameType);
             st.execute();
         } catch (SQLException ex) {
             Nedologin.logger.error("Error registering entry", ex);
@@ -116,7 +116,7 @@ public abstract class StorageProviderSQL implements StorageProvider {
             return GameType.byId(rs.getInt("defaultGameType"));
         } catch (SQLException ex) {
             Nedologin.logger.error("Error looking up entry", ex);
-            return GameType.byId(NLConfig.SERVER.defaultGameType.get());
+            return GameType.byId(NLConfig.defaultGameType);
         }
     }
 

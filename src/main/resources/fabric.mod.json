@@ -1,0 +1,33 @@
+{
+    "schemaVersion": 1,
+    "id": "nedologin",
+    "version": "${version}",
+    "name": "Nedologin",
+    "license": "Beerware",
+    "authors": [
+        "marduk.ru",
+        "AwesomeKalin55",
+        "Seraph_JACK (SimpleLogin)",
+        "Yesterday17 (SimpleLogin)"
+    ],
+    "description": "Auth mod based on fabric",
+    "mixins": [
+        "mixins.nedologin.json"
+    ],
+    "entrypoints": {
+        "main": [
+            "ru.marduk.nedologin.Nedologin"
+        ],
+        "client": [
+            "ru.marduk.nedologin.NedologinClient"
+        ],
+        "server": [
+            "ru.marduk.nedologin.NedologinServer"
+        ]
+    },
+    "accessWidener": "nedologin.accesswidener",
+    "depends": {
+        "fabric": "*",
+        "midnightlib": "*"
+    }
+}

@@ -2,19 +2,18 @@ package ru.marduk.nedologin.server.handler;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.server.ServerLifecycleHooks;
-import ru.marduk.nedologin.NLConfig;
+import org.jetbrains.annotations.Nullable;
 import ru.marduk.nedologin.Nedologin;
+import ru.marduk.nedologin.NedologinServer;
 import ru.marduk.nedologin.server.storage.NLStorage;
 import ru.marduk.nedologin.server.NLRegistries;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +24,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-@OnlyIn(Dist.DEDICATED_SERVER)
+@Environment(EnvType.SERVER)
 public final class PlayerLoginHandler {
     private static PlayerLoginHandler INSTANCE;
 
@@ -76,7 +75,7 @@ public final class PlayerLoginHandler {
 
     public void login(String id, String pwd) {
         id = id.toLowerCase();
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        MinecraftServer server = NedologinServer.SERVER;
         Login login = getLoginByName(id);
         ServerPlayer player = server.getPlayerList().getPlayerByName(id);
 

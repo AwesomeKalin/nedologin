@@ -1,10 +1,11 @@
 package ru.marduk.nedologin.server.handler.plugins;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.PacketDistributor;
+import ru.marduk.nedologin.NLConstants;
 import ru.marduk.nedologin.server.handler.Login;
-import ru.marduk.nedologin.network.MessageRequestLogin;
-import ru.marduk.nedologin.network.NetworkLoader;
 import ru.marduk.nedologin.server.handler.HandlerPlugin;
 
 import java.util.Map;
@@ -27,7 +28,7 @@ public final class ResendRequest implements HandlerPlugin {
     @Override
     public void preLogin(ServerPlayer player, Login login) {
         ScheduledFuture<?> future = executor.scheduleWithFixedDelay(() -> {
-            NetworkLoader.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new MessageRequestLogin());
+            ServerPlayNetworking.send(player, new ResourceLocation(NLConstants.MODID, "request_login"), PacketByteBufs.create());
         }, 0, 5, TimeUnit.SECONDS);
         Optional.ofNullable(futures.put(login.name, future)).ifPresent(f -> f.cancel(true));
     }

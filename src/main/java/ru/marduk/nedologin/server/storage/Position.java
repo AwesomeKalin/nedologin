@@ -1,11 +1,11 @@
 package ru.marduk.nedologin.server.storage;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.DEDICATED_SERVER)
+@Environment(EnvType.SERVER)
 public final class Position {
     private final double x, y, z;
 

@@ -7,12 +7,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.forgespi.Environment;
 import ru.marduk.nedologin.server.storage.NLStorage;
 
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +21,7 @@ public final class ArgumentTypeEntryName implements ArgumentType<EntryNameInput>
 
     private static final DynamicCommandExceptionType ENTRY_NOT_EXIST = new DynamicCommandExceptionType((o -> Component.translatable("nedologin.command.error.entry_not_found")));
 
-    private ArgumentTypeEntryName() {
+    public ArgumentTypeEntryName() {
 
     }
 
@@ -33,7 +33,9 @@ public final class ArgumentTypeEntryName implements ArgumentType<EntryNameInput>
     public EntryNameInput parse(StringReader reader) throws CommandSyntaxException {
         String name = reader.readString();
 
-        if (Environment.get().getDist() == Dist.DEDICATED_SERVER && !NLStorage.instance().storageProvider.registered(name)) {
+        EnvType env = FabricLoader.getInstance().getEnvironmentType();
+
+        if (env == EnvType.SERVER && !NLStorage.instance().storageProvider.registered(name)) {
             throw ENTRY_NOT_EXIST.create(name);
         }
         return EntryNameInput.of(name);

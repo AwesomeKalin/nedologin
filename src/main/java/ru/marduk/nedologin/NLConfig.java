@@ -1,84 +1,35 @@
 package ru.marduk.nedologin;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import org.apache.commons.lang3.tuple.Pair;
+import eu.midnightdust.lib.config.MidnightConfig;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-public final class NLConfig {
-    public static class Server {
-        public final ForgeConfigSpec.IntValue secs;
+public final class NLConfig extends MidnightConfig {
+    @MidnightConfig.Server()
+    @Entry(name = "Login Timeout(s)", min = 0, max = 1200, isSlider = true)
+    public static int secs;
 
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> whitelistCommands;
+    @MidnightConfig.Server()
+    @Entry(name = "Commands in whitelist can be executed before player login.")
+    public static List<? extends String> whiteListCommands;
 
-        public final ForgeConfigSpec.ConfigValue<Boolean> autoRegister;
+    @MidnightConfig.Server()
+    @Entry(name = "Automatically register players (disable this if you choose to register players differently)")
+    public static boolean autoRegister;
 
-        public final ForgeConfigSpec.ConfigValue<Boolean> enableChangePassword;
+    @MidnightConfig.Server()
+    @Entry(name = "Should the player be able to change the password?")
+    public static boolean enableChangePassword;
 
-        public final ForgeConfigSpec.ConfigValue<String> storageProvider;
+    @MidnightConfig.Server()
+    @Entry(name = "Which storage provider to use\nNedologin provides to available providers by default:\nnedologin:file -> file based storage\nnedologin:sqlite -> sqlite based storage\nnedologin:mariadb -> mariadb based storage (requires additional configuration)\nNote that you need to add JDBC sqlite & mariadb yourself if you want to use database based storage")
+    public static String storageProvider;
 
-        public final ForgeConfigSpec.IntValue defaultGameType;
+    @MidnightConfig.Server()
+    @Entry(name = "Default game type switched after player login\n0,1,2,3 represents survival,creative,adventure,spectator")
+    public static int defaultGameType;
 
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> plugins;
-
-        Server(ForgeConfigSpec.Builder builder) {
-            builder.push("server");
-
-            autoRegister = builder
-                    .comment("Automatically register players (disable this if you choose to register players differently)")
-                    .define("autoRegister", true);
-
-            enableChangePassword = builder
-                    .comment("Should the player be able to change the password?")
-                    .define("enableChangePassword", true);
-
-            secs = builder
-                    .comment("Login Timeout(s)")
-                    .defineInRange("secs", 600, 0, 1200);
-
-            whitelistCommands = builder
-                    .comment("Commands in whitelist can be executed before player login.")
-                    .defineList("commandNames", Collections.emptyList(), o -> o instanceof String);
-
-            storageProvider = builder
-                    .comment("Which storage provider to use")
-                    .comment("Nedologin provides to available providers by default:")
-                    .comment("nedologin:file -> file based storage")
-                    .comment("nedologin:sqlite -> sqlite based storage")
-                    .comment("nedologin:mariadb -> mariadb based storage (requires additional configuration)")
-                    .comment("Note that you need to add JDBC sqlite & mariadb yourself if you want to use database based storage")
-                    .define("storageProvider", "nedologin:file");
-
-            defaultGameType = builder
-                    .comment("Default game type switched after player login")
-                    .comment("0,1,2,3 represents survival,creative,adventure,spectator")
-                    .defineInRange("defaultGameType", 0, 0, 3);
-
-            plugins = builder
-                    .comment("Player login handler plugins to load")
-                    .comment("nedologin:protect_coord is disabled by default, add to here to enable coord protect feature")
-                    .defineList("plugins",
-                            Arrays.asList(
-                                    "nedologin:auto_save",
-                                    "nedologin:resend_request",
-                                    "nedologin:restrict_game_type",
-                                    "nedologin:restrict_movement",
-                                    "nedologin:timeout"
-                            ),
-                            o -> o instanceof String);
-
-            builder.pop();
-        }
-    }
-
-    static final ForgeConfigSpec SERVER_SPEC;
-    public static final Server SERVER;
-
-    static {
-        final Pair<Server, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Server::new);
-        SERVER_SPEC = specPair.getRight();
-        SERVER = specPair.getLeft();
-    }
+    @MidnightConfig.Server()
+    @Entry(name = "Player login handler plugins to load\nnedologin:protect_coord is disabled by default, add to here to enable coord protect feature")
+    public static List<? extends String> plugins;
 }

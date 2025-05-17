@@ -18,6 +18,10 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public final class ArgumentTypeHandlerPlugin implements ArgumentType<HandlerPluginInput> {
+    public ArgumentTypeHandlerPlugin() {
+        this.type = 0;
+    }
+
     /**
      * 0 to suggest loaded plugins
      * 1 to suggest unloaded plugins

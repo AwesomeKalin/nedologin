@@ -3,7 +3,7 @@ package ru.marduk.nedologin.server.handler.plugins;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import ru.marduk.nedologin.NedologinServer;
 import ru.marduk.nedologin.server.LastPosData;
 import ru.marduk.nedologin.Nedologin;
 import ru.marduk.nedologin.server.handler.HandlerPlugin;
@@ -19,7 +19,7 @@ public final class ProtectCoord implements HandlerPlugin {
 
     @Override
     public void postLogin(ServerPlayer player, Login login) {
-        ServerLifecycleHooks.getCurrentServer().tell(new TickTask(1, () -> {
+        NedologinServer.SERVER.tell(new TickTask(1, () -> {
             Position lastPos = LastPosData.getLastPos(player);
 
             if (lastPos.equals(LastPosData.defaultPosition)) {

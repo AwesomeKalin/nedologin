@@ -30,7 +30,7 @@ public class MixinPlayerManager {
             Nedologin.logger.warn("Someone tried to log in as an already present player {}", pGameProfile.getName());
         }
 
-        if (!NLStorage.instance().storageProvider.registered(pGameProfile.getName()) && !NLConfig.SERVER.autoRegister.get()) {
+        if (!NLStorage.instance().storageProvider.registered(pGameProfile.getName()) && !NLConfig.autoRegister) {
             // this sounds like that one ""
             Nedologin.logger.warn("Player {} tried to register (automatic registration is disabled)", pGameProfile.getName());
             cir.setReturnValue(Component.literal("Automatic registration is disabled on this server."));
