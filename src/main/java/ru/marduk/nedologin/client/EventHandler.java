@@ -14,8 +14,7 @@ public final class EventHandler {
 
     public static void onGuiOpen(Minecraft minecraft, Screen screen, int i, int i1) {
         if (!(screen instanceof SetPasswordScreen) && !PasswordHolder.instance().initialized()) {
-            Screen prev = screen;
-            minecraft.setScreen(new SetPasswordScreen(prev));
+            minecraft.setScreen(new SetPasswordScreen(new TitleScreen()));
         }
     }
 

@@ -5,20 +5,16 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import ru.marduk.nedologin.NLConstants;
 import ru.marduk.nedologin.Nedologin;
 import ru.marduk.nedologin.server.handler.PlayerLoginHandler;
 import ru.marduk.nedologin.NLConfig;
-
-import java.lang.reflect.Field;
 
 @Environment(EnvType.SERVER)
 public class ServerSideEventHandler {
